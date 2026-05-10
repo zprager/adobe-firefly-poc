@@ -215,3 +215,36 @@ campaign-gen/
         ├── render.js         # puppeteer: HTML -> PNG
         └── gallery.js        # build gallery.html for the whole run
 ```
+
+---
+
+## Key design decisions
+
+- **Organized around a campaign, not a product.** The brief is the unit of work, and every product in it shares the campaign-level fields: `region`, `audience`, `tone`, `key_message`, `cta`, and `brand.guidelines`. Per-product copy is generated from this shared context plus the product's own `name` / `description`. This matches how marketing teams actually plan — one campaign, many SKUs telling the same story — and means brand-voice changes happen in one place instead of being duplicated per product.
+
+- **Sibling products are passed as names only, not descriptions.** When generating copy for product A, the model sees the names of products B and C as portfolio context with an explicit "do NOT mention" instruction. Their descriptions are intentionally withheld so the model can't bleed feature claims across SKUs.
+
+- **Brand-guideline review runs synchronously between copy and image generation.** Copy is cheap; hero generation is slow and rate-limited. Putting the review in between means the user sees scores and contradictions before committing to the long image phase, and can `Ctrl+C` to fix the brief without burning image-API spend.
+
+- **Text is composed in HTML, never baked into the hero.** The `gpt-image-1` prompt explicitly forbids text inside the image and reserves negative space for the overlay. All copy is rendered in HTML/CSS at known font sizes and screenshotted with Puppeteer. This keeps headlines crisp, multilingual, and editable without re-generating the image.
+
+- **Four-tier hero precedence (per-product → company → brief-level → generated).** Lets a team mix studio-shot heroes with AI-generated ones in the same run, override per-product without touching the brief, and fall through to `gpt-image-1` only when nothing else exists.
+
+- **Brief is the single source of truth; CLI flags are pure overrides.** Empty/`undefined` flags are pruned before merging so a missing flag never clobbers a brief value. The same brief produces the same run regardless of which terminal it's invoked from.
+
+---
+
+## Assumptions and limitations
+
+- **No data store for runs.** Each run lands in its own timestamped folder under `./output/`. There's no index, no DB, and no API for listing or searching past runs.
+- **No campaign library / reuse UI.** Users can't browse previous runs, fork a brief from one, or edit-and-rerun from a UI — they have to find the folder on disk and re-invoke the CLI.
+- **Evaluation is brand-voice only.** The review agent scores against `brand.guidelines.follow` / `avoid`. There are no evals for legal/regulatory compliance, claim substantiation, trademark conflicts, or accessibility (alt-text quality, contrast).
+- **No feedback loop on outputs.** There's no rating system, no thumbs-up/down, and nothing flowing back into the prompts. The model can't learn which past outputs the team approved or rejected.
+- **No "approve / favorite" workflow.** Every render is treated equally; the team has no way to mark assets as approved, send them to a scheduler, or pin favorites for reuse in future campaigns.
+- **Audience is a freeform string in the brief.** Ideally `brief.audience` would pull from a CDP / marketing cloud (segments, personas, region-specific firmographics) rather than being hand-typed each time.
+- **Product copy is generated per-product, not optimized across the set.** Each product gets its own `gpt-4o-mini` call with sibling names as context. There's no cross-product pass to dedupe phrasing, balance hashtag overlap, or sequence the posts as a campaign narrative.
+- **`gpt-image-1` rate limits.** Image throttling is a fixed 2s sleep between consecutive generation calls. Larger campaigns (many products × ratios) will hit per-minute limits; the retry handler backs off but does not adapt the throttle dynamically based on observed `ratelimit-*` headers.
+- **Single-locale runs.** A run produces one language at the brief's tone/region. Multi-locale would need either separate runs or a localization pass that this pipeline doesn't have.
+- **No human-in-the-loop checkpoint.** Once `generate` is invoked it runs to completion. There's no pause-after-copy step where a copywriter can edit the JSON before heroes are generated.
+- **Puppeteer / Chromium dependency.** Adds ~170MB on install and requires a working headless Chromium, which is awkward in some sandboxed CI environments.
+
