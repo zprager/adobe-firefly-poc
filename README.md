@@ -2,6 +2,8 @@
 
 CLI that turns a campaign brief into a full pack of social assets: per-product post copy, overlay copy, hero images (generated or supplied), and rendered post PNGs at 1:1, 16:9, and 9:16. A browsable HTML gallery is emitted at the end of every run.
 
+Repo: https://github.com/zprager/adobe-firefly-poc
+
 ---
 
 ## Part 1 — Install, set up, and run
@@ -15,7 +17,8 @@ CLI that turns a campaign brief into a full pack of social assets: per-product p
 ### Install
 
 ```bash
-cd campaign-gen
+git clone https://github.com/zprager/adobe-firefly-poc.git
+cd adobe-firefly-poc/campaign-gen
 npm install
 ```
 

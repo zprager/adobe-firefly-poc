@@ -64,10 +64,16 @@ export async function generateHero({ brief, product, ratio, outPath, userHeroPat
     ? `Product featured: ${product.name} — ${product.description}.`
     : `Product featured: ${product.name}.`;
 
+  const features = Array.isArray(product.features) ? product.features.filter(Boolean) : [];
+  const featuresLine = features.length
+    ? `Visually emphasize these product-specific features so this hero is unmistakably about ${product.name} and not another product in the same family: ${features.join("; ")}. Translate these features into concrete on-set objects, props, surfaces, lighting choices, or scene details — not literal UI screenshots.`
+    : "";
+
   const prompt = [
     `Hero image for a social media campaign with campaign message: ${brief.key_message}.`,
     brief.topic ? `Topic: ${brief.topic}.` : "",
     productLine,
+    featuresLine,
     `Region / market: ${brief.region}.`,
     `Audience: ${brief.audience}.`,
     `Visual style: ${brief.hero.style}.`,

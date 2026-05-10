@@ -42,6 +42,7 @@ const ProductSchema = z.union([
   z.object({
     name: z.string().min(1),
     description: z.string().optional(),
+    features: z.array(z.string().min(1)).default([]),
   }),
 ]);
 

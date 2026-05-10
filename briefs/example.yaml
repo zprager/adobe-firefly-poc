@@ -6,14 +6,36 @@ campaign: spring-launch
 # Company / brand running the campaign.
 company: Acme
 
-# At least two products. Each entry is { name, description? }; a bare string is also accepted and treated as { name }.
+# At least two products. Each entry is { name, description?, features? }; a bare
+# string is also accepted and treated as { name }.
+#
+# `features` is an optional list of distinctive product traits. They are pushed
+# into the hero-image prompt as concrete visual cues so products in the same
+# family (e.g. Calendar vs. Notes) don't render as interchangeable scenes.
+# Prefer phrasing that suggests *objects, props, or scene moments* over UI
+# screenshots — gpt-image-1 leans into physical detail much better than chrome.
 products:
   - name: Acme Calendar AI
     description: AI-powered scheduling that learns your habits and drafts your week.
+    features:
+      - a week-at-a-glance grid of time blocks, color-coded by focus vs. meetings
+      - a wall clock or wristwatch as a hero prop — time is the subject
+      - morning daylight suggesting the start of a planned day
+      - a paper weekly planner open on the desk, pen resting on Monday
   - name: Acme Inbox AI
     description: Auto-triages email and surfaces only the threads that need you.
+    features:
+      - a single envelope or letter spotlit on an otherwise empty desk (signal vs. noise)
+      - a tidy stack of sorted mail beside an empty in-tray
+      - a magnifying glass or sorting motion implying triage
+      - cool, focused task lighting rather than warm ambient light
   - name: Acme Notes AI
     description: Captures meeting notes and turns them into shareable summaries and action items.
+    features:
+      - an open notebook with handwritten bullet points and a few highlighted action items
+      - sticky notes fanned across the desk, one circled as a key takeaway
+      - a felt-tip pen mid-stroke, as if a thought is being captured
+      - a small audio recorder or microphone beside the notebook (capture-from-meeting cue)
 
 # Target region / market the campaign is aimed at.
 region: North America (US + Canada)

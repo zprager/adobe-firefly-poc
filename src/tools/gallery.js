@@ -288,7 +288,7 @@ export async function writeGallery(manifest) {
   .score-mid  { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
   .score-low  { background: var(--danger-soft); color: var(--danger-text); }
   .posts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; align-content: start; }
-  .post { margin: 0; background: var(--bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .post { margin: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
   .post a { display: block; }
   .post img { display: block; width: 100%; height: auto; }
   .post figcaption { padding: 6px 8px; font-size: 12px; color: var(--muted); background: var(--surface); border-top: 1px solid var(--border); }
